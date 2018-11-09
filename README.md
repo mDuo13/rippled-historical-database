@@ -26,6 +26,7 @@ The Ripple Data API v2 replaces the Historical Database v1 and the [Charts API](
 [v2.3.0]: https://github.com/ripple/rippled-historical-database/releases/tag/v2.3.0
 [v2.3.2]: https://github.com/ripple/rippled-historical-database/releases/tag/v2.3.2
 [v2.3.5]: https://github.com/ripple/rippled-historical-database/releases/tag/v2.3.5
+[v2.4.0]: https://github.com/ripple/rippled-historical-database/releases/tag/v2.4.0
 
 
 # API Method Reference
@@ -82,10 +83,8 @@ Validation Network Methods:
 * [Get Topology Nodes - `GET /v2/network/topology/nodes`](#get-topology-nodes)
 * [Get Topology Node - `GET /v2/network/topology/nodes/{pubkey}`](#get-topology-node)
 * [Get Topology Links - `GET /v2/network/topology/links`](#get-topology-links)
-* [Get Validations  - `GET /v2/network/validations`](#get-validations)
 * [Get Validator  - `GET /v2/network/validators/{pubkey}`](#get-validator)
 * [Get Validators  - `GET /v2/network/validators`](#get-validators)
-* [Get Validator Validations - `GET /v2/network/validators/{pubkey}/validations`](#get-validator-validations)
 * [Get Validator Manifests - `GET /v2/network/validators/{pubkey}/manifests`](#get-validator-manifests)
 * [Get Single Validator Reports - `GET /v2/network/validators/{pubkey}/reports`](#get-single-validator-reports)
 * [Get Daily Validator Reports - `GET /v2/network/validator_reports`](#get-daily-validator-reports)
@@ -2642,7 +2641,7 @@ Response:
 ## Get Validator
 [[Source]<br>](https://github.com/ripple/rippled-historical-database/blob/develop/api/routes/network/getValidators.js "Source")
 
-Get details of a single validator in the [consensus network](https://developers.ripple.com/consensus.html). _(New in [v2.2.0][])_
+Get details of a single validator in the [consensus network](https://developers.ripple.com/consensus.html). _(Updated in [v2.4.0][])_
 
 
 #### Request Format
@@ -2678,8 +2677,8 @@ A successful response uses the HTTP code **200 OK** and has a JSON body with the
 | `result`                | String                          | The value `success` indicates that the body represents a successful response. |
 | `validation_public_key` | String - Base-58 [Public Key][] | This validator's validator public key. |
 | `domain`                | String                          | (May be omitted) The DNS domain associated with this validator. |
-| `chain`                 | String                          | Ledger hash chain which this validator is currently following. |
-| `unl`                   | Bool                            | True if the validator is part of the ledger chain's UNL. |
+| `chain`                 | String                          | Ledger hash chain which this validator is currently following. The value `main` indicates the main network and `altnet` indicates the XRP Test Network. Other forks are named `chain.{NUMBER}`, where `{NUMBER}` is a unique number for each fork. |
+| `unl`                   | Bool                            | True if the validator is part of the ledger chain's recommended UNL. |
 | `current_index`         | Number                          | Ledger index of most recently validated ledger. |
 | `partial`               | Bool                            | True if the most recent validation was a partial one. |
 | `agreement_1h`          | Agreement Object                | Object containing agreement stats for the most recent hour. |
@@ -2734,7 +2733,7 @@ Response:
 ## Get Validators
 [[Source]<br>](https://github.com/ripple/rippled-historical-database/blob/develop/api/routes/network/getValidators.js "Source")
 
-Get a list of known validators active in the last 24 hours. _(New in [v2.2.0][])_
+Get a list of known validators active in the last 24 hours. _(Updated in [v2.4.0][])_
 
 
 #### Request Format
@@ -2773,8 +2772,8 @@ A successful response uses the HTTP code **200 OK** and has a JSON body with the
 |:------------------------|:--------------------------------|:-----------------|
 | `validation_public_key` | String - Base-58 [Public Key][] | This validator's validator public key. |
 | `domain`                | String                          | (May be omitted) The DNS domain associated with this validator. |
-| `chain`                 | String                          | Ledger hash chain which this validator is currently following. |
-| `unl`                   | Bool                            | True if the validator is part of the ledger chain's UNL. |
+| `chain`                 | String                          | Ledger hash chain which this validator is currently following. The value `main` indicates the main network and `altnet` indicates the XRP Test Network. Other forks are named `chain.{NUMBER}`, where `{NUMBER}` is a unique number for each fork. |
+| `unl`                   | Bool                            | True if the validator is part of the ledger chain's recommended UNL. |
 | `current_index`         | Number                          | Ledger index of most recently validated ledger. |
 | `partial`               | Bool                            | True if the most recent validation was a partial one. |
 | `agreement_1h`          | Agreement Object                | Object containing agreement stats for the most recent hour. |
@@ -2924,7 +2923,7 @@ Response:
 ## Get Single Validator Reports
 [[Source]<br>](https://github.com/ripple/rippled-historical-database/blob/develop/api/routes/network/getValidatorReports.js "Source")
 
-Get a single validator's validation vote stats for 24-hour intervals.
+Get a single validator's validation vote stats for 24-hour intervals. _(Updated in [v2.4.0][])_
 
 #### Request Format
 
@@ -2969,9 +2968,9 @@ Each member in the `reports` array is a Single Validator Report Object with data
 
 | Field                | Value                           | Description                  |
 |:---------------------|:--------------------------------|:-----------------------------|
-| `validation_publkic` | String - Base-58 [Public Key][] | Validator public key. |
+| `validation_public_key` | String - Base-58 [Public Key][] | Validator public key. |
 | `date`               | String - [Timestamp][]          | The start time of the date this object describes. |
-| `chain`              | String                          | Ledger hash chain which this validator is currently following. |
+| `chain`              | String                          | Ledger hash chain which this validator is currently following. The value `main` indicates the main network and `altnet` indicates the XRP Test Network. Other forks are named `chain.{NUMBER}`, where `{NUMBER}` is a unique number for each fork. |
 | `score`              | String                          | Score of agreement with the ledger chain being followed. |
 | `missed`             | Integer                         | Number of ledgers not validated during the time period. |
 | `total`              | Integer                         | Number of ledgers that could have been validated during the time period. |
@@ -3060,9 +3059,9 @@ Each member in the `reports` array is a Single Validator Report Object with data
 
 | Field                | Value                           | Description                  |
 |:---------------------|:--------------------------------|:-----------------------------|
-| `validation_publkic` | String - Base-58 [Public Key][] | Validator public key. |
+| `validation_public_key` | String - Base-58 [Public Key][] | Validator public key. |
 | `date`               | String - [Timestamp][]          | The start time of the date this object describes. |
-| `chain`              | String                          | Ledger hash chain which this validator is currently following. |
+| `chain`              | String                          | Ledger hash chain which this validator is currently following. The value `main` indicates the main network and `altnet` indicates the XRP Test Network. Other forks are named `chain.{NUMBER}`, where `{NUMBER}` is a unique number for each fork. |
 | `score`              | String                          | Score of agreement with the ledger chain being followed. |
 | `missed`             | Integer                         | Number of ledgers not validated during the time period. |
 | `total`              | Integer                         | Number of ledgers that could have been validated during the time period. |
@@ -3091,7 +3090,7 @@ Response:
       "score": "0.6909",
       "total": "16127",
       "missed": "7216"
-    },
+    }
   ]
 }
 ```
@@ -3306,7 +3305,7 @@ A successful response uses the HTTP code **200 OK** and has a JSON body with the
 | `start_date` | String - [Timestamp][] | The approximate date of the first time exchanges for this gateway's currencies appeared in the ledger. |
 | `accounts`   | Array                  | A list of [issuing addresses](https://developers.ripple.com/issuing-and-operational-addresses.html) used by this gateway. (Gateways may use different issuing accounts for different currencies.) |
 | `hotwallets` | Array of [Address][]es | This gateway's [operational addresses](https://developers.ripple.com/issuing-and-operational-addresses.html). |
-| `domain`     | String                 | The domain name where this gateway does business. Typically the gateway hosts a [`ripple.txt`](https://wiki.ripple.com/Ripple.txt) there. |
+| `domain`     | String                 | The domain name where this gateway does business. |
 | `normalized` | String                 | A normalized version of the `name` field suitable for including in URLs. |
 | `assets`     | Array of Strings       | Graphics filenames available for this gateway, if any. (Mostly, these are logos used by XRP Charts.) |
 
